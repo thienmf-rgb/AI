@@ -412,24 +412,21 @@ statsSetings = function(Y, R)
 		end;
 	end;
 BringEnemy = function()
-		if not _B then
-			return;
-		end;
-		for Y, R in pairs(workspace.Enemies:GetChildren()) do
-			if R:FindFirstChild("Humanoid") and R.Humanoid.Health > 0 then
-				if (R.PrimaryPart.Position - PosMon).Magnitude <= 300 then
-					R.PrimaryPart.CFrame = CFrame.new(PosMon);
-					R.PrimaryPart.CanCollide = true;
-					(R:FindFirstChild("Humanoid")).WalkSpeed = 0;
-					(R:FindFirstChild("Humanoid")).JumpPower = 0;
-					if R.Humanoid:FindFirstChild("Animator") then
-						R.Humanoid.Animator:Destroy();
-					end;
-					d.SimulationRadius = math.huge;
-				end;
-			end;
-		end;
-	end;
+    if not _B then return end
+    PosMon = PosMon or Root.Position 
+    
+    for _, mob in pairs(workspace.Enemies:GetChildren()) do
+        if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and mob.PrimaryPart then
+            local distance = (mob.PrimaryPart.Position - PosMon).Magnitude
+            if distance <= 300 then
+                mob.PrimaryPart.CFrame = CFrame.new(PosMon)  -- Gom về 1 chỗ
+                mob.PrimaryPart.CanCollide = false
+                mob.Humanoid.WalkSpeed = 0
+                mob.Humanoid.JumpPower = 0
+            end
+        end
+    end
+end
 Useskills = function(Y, d)
 		if Y == "Melee" then
 			weaponSc("Melee");
@@ -12744,6 +12741,16 @@ task.spawn(function()
 	end)
 end)
 -- ==================== MAIN FARM LOOP (QUAN TRỌNG) ====================
+-- Cài đặt vị trí đứng farm cố định
+spawn(function()
+    while wait(0.5) do
+        pcall(function()
+            if _G.FarmLevel and PosMon then
+                Root.CFrame = CFrame.new(PosMon) * CFrame.new(0, 20, 0)  -- Nhân vật đứng yên
+            end
+        end)
+    end
+end)
 spawn(function()
 	while wait(T) do
 		pcall(function()
