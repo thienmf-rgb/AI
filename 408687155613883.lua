@@ -2,6 +2,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDzaiScript/Setting
 local Y = game.Players;
 local d = Y.LocalPlayer;
 local R = d.Character.HumanoidRootPart;
+local lp = game.Players.LocalPlayer
+local Root = lp.Character:WaitForChild("HumanoidRootPart")
 local Q = game:GetService("ReplicatedStorage");
 local r = d.Data.Level.Value;
 local a = game:GetService("TeleportService");
@@ -12741,14 +12743,16 @@ task.spawn(function()
 		end)
 	end)
 end)
--- ==================== MAIN FARM LOOP ====================
+-- ==================== MAIN FARM LOOP (QUAN TRỌNG) ====================
 spawn(function()
 	while wait(T) do
 		pcall(function()
 			if not _G.FarmLevel then return end
 			
-			CheckQuest()  -- Cập nhật quest
+			-- Auto Quest
+			CheckQuest()
 			
+			-- Tìm và đánh quái
 			local enemy = GetConnectionEnemies(Mon)
 			if enemy and f.Alive(enemy) then
 				f.Kill(enemy)
