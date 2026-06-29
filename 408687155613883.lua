@@ -418,7 +418,9 @@ BringEnemy = function()
         if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and mob.PrimaryPart then
             local distance = (mob.PrimaryPart.Position - PosMon).Magnitude
             if distance <= 350 then
-                mob.PrimaryPart.CFrame = CFrame.new(PosMon + Vector3.new(0, 5, 0))
+                -- Giữ quái sát mặt đất, không bay lên
+                local groundPos = PosMon + Vector3.new(0, 3, 0)  -- Cao vừa đủ
+                mob.PrimaryPart.CFrame = CFrame.new(groundPos)
                 mob.PrimaryPart.CanCollide = false
                 mob.PrimaryPart.Velocity = Vector3.new(0,0,0)
                 mob.PrimaryPart.RotVelocity = Vector3.new(0,0,0)
@@ -12766,4 +12768,14 @@ spawn(function()
 			end
 		end)
 	end
+end)
+-- Nhân vật đứng sát đất
+spawn(function()
+    while wait(0.2) do
+        pcall(function()
+            if _G.FarmLevel and PosMon then
+                Root.CFrame = CFrame.new(PosMon.X, PosMon.Y + 5, PosMon.Z) * CFrame.Angles(0, math.rad(180), 0)
+            end
+        end)
+    end
 end)
