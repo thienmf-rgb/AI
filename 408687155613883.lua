@@ -431,21 +431,30 @@ statsSetings = function(Y, R)
 BringEnemy = function()
     if not PosMon then return end
     
-    local questMobName = Mon  -- Mon là tên quái trong quest (đã được set ở CheckQuest)
+    local questMobName = Mon  -- Chỉ gom quái đúng tên quest
     
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
-        if mob.Name == questMobName and  -- CHỈ GOM QUÁI CÙNG TÊN
+        if mob.Name == questMobName and 
            mob:FindFirstChild("Humanoid") and 
            mob:FindFirstChild("HumanoidRootPart") and
            mob.Humanoid.Health > 0 then
             
-            local dist = (mob.HumanoidRootPart.Position - PosMon).Magnitude
+            local root = mob.HumanoidRootPart
+            local dist = (root.Position - PosMon).Magnitude
             
             if dist <= 350 then
-                mob.HumanoidRootPart.CFrame = CFrame.new(PosMon.X, PosMon.Y + 4, PosMon.Z)
-                mob.HumanoidRootPart.CanCollide = false
-                mob.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-                mob.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+                -- === KÉO TỪ TỪ THAY VÌ DỊCH CHUYỂN NGAY ===
+                local direction = (PosMon - root.Position).Unit
+                local pullSpeed = 35  -- Tốc độ kéo (càng nhỏ càng chậm, tự nhiên hơn)
+                
+                root.CFrame = root.CFrame:Lerp(
+                    CFrame.new(PosMon.X, PosMon.Y + 4, PosMon.Z), 
+                    0.2  -- Độ mượt (0.2 ~ 0.35 là tự nhiên)
+                )
+                
+                root.CanCollide = false
+                root.Velocity = direction * pullSpeed
+                root.RotVelocity = Vector3.new(0, 0, 0)
                 
                 local hum = mob:FindFirstChild("Humanoid")
                 if hum then
