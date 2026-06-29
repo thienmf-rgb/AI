@@ -1,4 +1,5 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDzaiScript/Setting/refs/heads/main/FastMax.lua"))()
+local mode = Root
 local Y = game.Players;
 local d = Y.LocalPlayer;
 local R = d.Character.HumanoidRootPart;
@@ -12759,19 +12760,28 @@ task.spawn(function()
 		end)
 	end)
 end)
--- ==================== MAIN FARM + QUEST NHANH ====================
+-- ==================== MAIN FARM LEVEL - KHÔNG ĐỨNG IM ====================
 spawn(function()
 	while wait(T) do
 		pcall(function()
 			if not _G.FarmLevel then return end
 			
-			CheckQuest()  -- Nhận quest siêu nhanh
+			-- Nhận quest nhanh + an toàn
+			if not d.PlayerGui.Main.Quest.Visible then
+				CheckQuest()
+				wait(0.2)
+			end
 			
 			local enemy = GetConnectionEnemies(Mon)
+			
 			if enemy and f.Alive(enemy) then
+				PosMon = enemy.HumanoidRootPart.Position
 				f.Kill(enemy)
-			elseif CFrameMon then
-				Root.CFrame = CFrameMon
+			else
+				-- Nếu không tìm thấy quái thì đi đến vị trí quest
+				if CFrameMon then
+					Root.CFrame = CFrameMon * CFrame.new(0, 10, 0)
+				end
 			end
 		end)
 	end
