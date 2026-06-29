@@ -12759,3 +12759,20 @@ task.spawn(function()
 		end)
 	end)
 end)
+-- ==================== MAIN FARM + QUEST NHANH ====================
+spawn(function()
+	while wait(T) do
+		pcall(function()
+			if not _G.FarmLevel then return end
+			
+			CheckQuest()  -- Nhận quest siêu nhanh
+			
+			local enemy = GetConnectionEnemies(Mon)
+			if enemy and f.Alive(enemy) then
+				f.Kill(enemy)
+			elseif CFrameMon then
+				Root.CFrame = CFrameMon
+			end
+		end)
+	end
+end)
