@@ -259,26 +259,26 @@ f.Alive = function(Y)
     return hum and hum.Health > 0;
 end;
 
-f.Pos = function(Y, d)  
-    if not Y or not Y:FindFirstChild("HumanoidRootPart") then return false; end
-    return (R.Position - Y.HumanoidRootPart.Position).Magnitude <= d;
-end;
+f.Pos = function(Y, d)
+    if not Y or not Y:FindFirstChild("HumanoidRootPart") then return false end
+		return (R.Position - Y.HumanoidRootPart.Position).Magnitude <= d;
+	end;
 
-f.Kill = function(Y)
-    if not Y or not f.Alive(Y) then return; end
-    PosMon = Y.HumanoidRootPart.Position;
-    BringEnemy();
-    EquipWeapon(_G.SelectWeapon or "Melee");
+f.Kill = function(mob)
+    if not mob or not f.Alive(mob) then return end
+    PosMon = mob.HumanoidRootPart.Position
+    BringEnemy()
+    EquipWeapon(_G.SelectWeapon or "Melee")
     
-    local tool = lp.Character:FindFirstChildOfClass("Tool");
-    local tip = tool and tool.ToolTip or "";
+    local tool = lp.Character:FindFirstChildOfClass("Tool")
+    local tip = tool and tool.ToolTip or ""
     
     if tip == "Blox Fruit" then
-        Root.CFrame = Y.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0) * CFrame.Angles(0, math.rad(90), 0);
+        Root.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0) * CFrame.Angles(0, math.rad(90), 0)
     else
-        Root.CFrame = Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0) * CFrame.Angles(0, math.rad(180), 0);
+        Root.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0) * CFrame.Angles(0, math.rad(180), 0)
     end
-end;
+end
 f.Kill2 = function(Y, d)
 		if Y and d then
 			if not Y:GetAttribute("Locked") then
@@ -12740,4 +12740,21 @@ task.spawn(function()
 			end
 		end)
 	end)
+end)
+-- ==================== MAIN FARM LOOP ====================
+spawn(function()
+	while wait(T) do
+		pcall(function()
+			if not _G.FarmLevel then return end
+			
+			CheckQuest()  -- Cập nhật quest
+			
+			local enemy = GetConnectionEnemies(Mon)
+			if enemy and f.Alive(enemy) then
+				f.Kill(enemy)
+			elseif CFrameMon then
+				Root.CFrame = CFrameMon
+			end
+		end)
+	end
 end)
