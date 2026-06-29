@@ -431,36 +431,40 @@ statsSetings = function(Y, R)
 BringEnemy = function()
     if not PosMon then return end
     
-    local questMobName = Mon  -- Chỉ gom quái đúng tên quest
+    local questMobName = Mon  -- Chỉ gom quái đúng quest
     
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob.Name == questMobName and 
-           mob:FindFirstChild("Humanoid") and 
            mob:FindFirstChild("HumanoidRootPart") and
+           mob:FindFirstChild("Humanoid") and 
            mob.Humanoid.Health > 0 then
             
             local root = mob.HumanoidRootPart
-            local dist = (root.Position - PosMon).Magnitude
+            local currentPos = root.Position
+            local dist = (currentPos - PosMon).Magnitude
             
-            if dist <= 350 then
-                -- === KÉO TỪ TỪ THAY VÌ DỊCH CHUYỂN NGAY ===
-                local direction = (PosMon - root.Position).Unit
-                local pullSpeed = 35  -- Tốc độ kéo (càng nhỏ càng chậm, tự nhiên hơn)
+            if dist <= 300 and dist > 8 then  -- Không kéo khi quá gần
                 
+                -- === KÉO RẤT TỪ TỪ & MỀM MẠI ===
+                local direction = (PosMon - currentPos).Unit
+                local pullSpeed = 18   -- Giảm mạnh tốc độ kéo (rất chậm)
+                
+                -- Di chuyển mượt
                 root.CFrame = root.CFrame:Lerp(
-                    CFrame.new(PosMon.X, PosMon.Y + 4, PosMon.Z), 
-                    0.2  -- Độ mượt (0.2 ~ 0.35 là tự nhiên)
+                    CFrame.new(PosMon.X, PosMon.Y + 3, PosMon.Z) * CFrame.Angles(0, math.rad(180), 0),
+                    0.18   -- Càng nhỏ càng mượt và chậm
                 )
                 
-                root.CanCollide = false
+                -- Áp dụng vận tốc nhẹ
                 root.Velocity = direction * pullSpeed
-                root.RotVelocity = Vector3.new(0, 0, 0)
+                root.RotVelocity = Vector3.new(0,0,0)
                 
-                local hum = mob:FindFirstChild("Humanoid")
+                root.CanCollide = false
+                
+                local hum = mob.Humanoid
                 if hum then
                     hum.WalkSpeed = 0
                     hum.JumpPower = 0
-                    hum.PlatformStand = false
                 end
             end
         end
