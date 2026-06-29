@@ -413,16 +413,23 @@ statsSetings = function(Y, R)
 	end;
 BringEnemy = function()
     if not _B then return end
-    PosMon = PosMon or Root.Position 
+    if not PosMon then PosMon = Root.Position end  -- Vị trí cố định
     
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and mob.PrimaryPart then
             local distance = (mob.PrimaryPart.Position - PosMon).Magnitude
-            if distance <= 300 then
-                mob.PrimaryPart.CFrame = CFrame.new(PosMon)  -- Gom về 1 chỗ
+            if distance <= 350 then
+                mob.PrimaryPart.CFrame = CFrame.new(PosMon + Vector3.new(0, 5, 0))  -- Giữ cố định
                 mob.PrimaryPart.CanCollide = false
-                mob.Humanoid.WalkSpeed = 0
-                mob.Humanoid.JumpPower = 0
+                mob.PrimaryPart.Velocity = Vector3.new(0,0,0)  -- Ngăn di chuyển
+                mob.PrimaryPart.RotVelocity = Vector3.new(0,0,0)
+                
+                local hum = mob:FindFirstChild("Humanoid")
+                if hum then
+                    hum.WalkSpeed = 0
+                    hum.JumpPower = 0
+                    hum.PlatformStand = true  
+                end
             end
         end
     end
