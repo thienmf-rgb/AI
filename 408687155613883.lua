@@ -252,51 +252,33 @@ gay = (function()
 	end)();
 local f = {};
 f.__index = f;
+
 f.Alive = function(Y)
-		if not Y then
-			return;
-		end;
-		local d = Y:FindFirstChild("Humanoid");
-		return d and d.Health > 0;
-	end;
-f.Pos = function(Y, d)
-		return (R.Position - mode.Position).Magnitude <= d;
-	end;
-f.Dist = function(Y, d)
-		return (R.Position - (Y:FindFirstChild("HumanoidRootPart")).Position).Magnitude <= d;
-	end;
-f.DistH = function(Y, d)
-		return (R.Position - (Y:FindFirstChild("HumanoidRootPart")).Position).Magnitude > d;
-	end;
-f.Kill = function(Y, d)
-		if Y and d then
-			if not Y:GetAttribute("Locked") then
-				Y:SetAttribute("Locked", Y.HumanoidRootPart.CFrame);
-			end;
-			PosMon = (Y:GetAttribute("Locked")).Position;
-			BringEnemy();
-			EquipWeapon(_G.SelectWeapon);
-			local d = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool");
-			local R = d.ToolTip;
-			if R == "Blox Fruit" then
-				_tp((Y.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
-			else
-				_tp((Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0)) * CFrame.Angles(0, math.rad(180), 0));
-			end;
-			if RandomCFrame then
-				wait(.5);
-				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 25));
-				wait(.5);
-				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(25, 20, 0));
-				wait(.5);
-				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(-25, 20, 0));
-				wait(.5);
-				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 25));
-				wait(.5);
-				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(-25, 20, 0));
-			end;
-		end;
-	end;
+    if not Y then return false; end
+    local hum = Y:FindFirstChild("Humanoid");
+    return hum and hum.Health > 0;
+end;
+
+f.Pos = function(Y, d)  
+    if not Y or not Y:FindFirstChild("HumanoidRootPart") then return false; end
+    return (R.Position - Y.HumanoidRootPart.Position).Magnitude <= d;
+end;
+
+f.Kill = function(Y)
+    if not Y or not f.Alive(Y) then return; end
+    PosMon = Y.HumanoidRootPart.Position;
+    BringEnemy();
+    EquipWeapon(_G.SelectWeapon or "Melee");
+    
+    local tool = lp.Character:FindFirstChildOfClass("Tool");
+    local tip = tool and tool.ToolTip or "";
+    
+    if tip == "Blox Fruit" then
+        Root.CFrame = Y.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0) * CFrame.Angles(0, math.rad(90), 0);
+    else
+        Root.CFrame = Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0) * CFrame.Angles(0, math.rad(180), 0);
+    end
+end;
 f.Kill2 = function(Y, d)
 		if Y and d then
 			if not Y:GetAttribute("Locked") then
