@@ -431,40 +431,42 @@ statsSetings = function(Y, R)
 BringEnemy = function()
     if not PosMon then return end
     
-    local questMobName = Mon  -- Chỉ gom quái đúng quest
-    
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
-        if mob.Name == questMobName and 
-           mob:FindFirstChild("HumanoidRootPart") and
-           mob:FindFirstChild("Humanoid") and 
+        if mob:FindFirstChild("Humanoid") and 
+           mob:FindFirstChild("HumanoidRootPart") and 
            mob.Humanoid.Health > 0 then
             
-            local root = mob.HumanoidRootPart
-            local currentPos = root.Position
-            local dist = (currentPos - PosMon).Magnitude
+            local shouldBring = true
             
-            if dist <= 300 and dist > 8 then  -- Không kéo khi quá gần
+            -- ==================== ĐIỀU KIỆN GOM QUÁI ====================
+            if _G.FarmLevel then
+                -- Khi Farm Level: CHỈ gom quái trong nhiệm vụ
+                if mob.Name ~= Mon then
+                    shouldBring = false
+                end
+            end
+            -- ============================================================
+            
+            if shouldBring then
+                local root = mob.HumanoidRootPart
+                local dist = (root.Position - PosMon).Magnitude
                 
-                -- === KÉO RẤT TỪ TỪ & MỀM MẠI ===
-                local direction = (PosMon - currentPos).Unit
-                local pullSpeed = 18   -- Giảm mạnh tốc độ kéo (rất chậm)
-                
-                -- Di chuyển mượt
-                root.CFrame = root.CFrame:Lerp(
-                    CFrame.new(PosMon.X, PosMon.Y + 3, PosMon.Z) * CFrame.Angles(0, math.rad(180), 0),
-                    0.18   -- Càng nhỏ càng mượt và chậm
-                )
-                
-                -- Áp dụng vận tốc nhẹ
-                root.Velocity = direction * pullSpeed
-                root.RotVelocity = Vector3.new(0,0,0)
-                
-                root.CanCollide = false
-                
-                local hum = mob.Humanoid
-                if hum then
-                    hum.WalkSpeed = 0
-                    hum.JumpPower = 0
+                if dist <= 280 then
+                    -- Kéo từ từ tự nhiên
+                    root.CFrame = root.CFrame:Lerp(
+                        CFrame.new(PosMon.X, PosMon.Y + 3, PosMon.Z) * CFrame.Angles(0, math.rad(180), 0),
+                        0.22
+                    )
+                    
+                    root.CanCollide = false
+                    root.Velocity = Vector3.new(0, 4, 0)
+                    root.RotVelocity = Vector3.new(0, 0, 0)
+                    
+                    local hum = mob.Humanoid
+                    if hum then
+                        hum.WalkSpeed = 0
+                        hum.JumpPower = 0
+                    end
                 end
             end
         end
