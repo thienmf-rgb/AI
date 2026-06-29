@@ -412,23 +412,22 @@ statsSetings = function(Y, R)
 		end;
 	end;
 BringEnemy = function()
-    if not _B then return end
-    if not PosMon then PosMon = Root.Position end  -- Vị trí cố định
+    if not _B or not PosMon then return end
     
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and mob.PrimaryPart then
             local distance = (mob.PrimaryPart.Position - PosMon).Magnitude
             if distance <= 350 then
-                mob.PrimaryPart.CFrame = CFrame.new(PosMon + Vector3.new(0, 5, 0))  -- Giữ cố định
+                mob.PrimaryPart.CFrame = CFrame.new(PosMon + Vector3.new(0, 5, 0))
                 mob.PrimaryPart.CanCollide = false
-                mob.PrimaryPart.Velocity = Vector3.new(0,0,0)  -- Ngăn di chuyển
+                mob.PrimaryPart.Velocity = Vector3.new(0,0,0)
                 mob.PrimaryPart.RotVelocity = Vector3.new(0,0,0)
                 
                 local hum = mob:FindFirstChild("Humanoid")
                 if hum then
                     hum.WalkSpeed = 0
                     hum.JumpPower = 0
-                    hum.PlatformStand = true  
+                    hum.PlatformStand = true
                 end
             end
         end
@@ -12747,30 +12746,22 @@ task.spawn(function()
 		end)
 	end)
 end)
--- ==================== MAIN FARM LOOP (QUAN TRỌNG) ====================
--- Cài đặt vị trí đứng farm cố định
-spawn(function()
-    while wait(0.5) do
-        pcall(function()
-            if _G.FarmLevel and PosMon then
-                Root.CFrame = CFrame.new(PosMon) * CFrame.new(0, 20, 0)  -- Nhân vật đứng yên
-            end
-        end)
-    end
-end)
+-- ==================== MAIN FARM LOOP (NHÂN VẬT ĐỨNG IM) ====================
 spawn(function()
 	while wait(T) do
 		pcall(function()
 			if not _G.FarmLevel then return end
 			
-			-- Auto Quest
 			CheckQuest()
 			
-			-- Tìm và đánh quái
 			local enemy = GetConnectionEnemies(Mon)
 			if enemy and f.Alive(enemy) then
+				-- Nhân vật đứng im
+				Root.CFrame = CFrame.new(PosMon or Root.Position) * CFrame.new(0, 20, 0)
 				f.Kill(enemy)
 			elseif CFrameMon then
+				-- Chỉ di chuyển khi quái hết
+				PosMon = CFrameMon.Position
 				Root.CFrame = CFrameMon
 			end
 		end)
