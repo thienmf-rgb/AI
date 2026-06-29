@@ -418,9 +418,10 @@ BringEnemy = function()
         if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and mob.PrimaryPart then
             local distance = (mob.PrimaryPart.Position - PosMon).Magnitude
             if distance <= 350 then
-                -- Giữ quái sát mặt đất, không bay lên
-                local groundPos = PosMon + Vector3.new(0, 3, 0)  -- Cao vừa đủ
-                mob.PrimaryPart.CFrame = CFrame.new(groundPos)
+                -- Giữ quái sát mặt đất hoàn toàn
+                local groundY = PosMon.Y + 3  -- Cao 3 stud so với mặt đất
+                mob.PrimaryPart.CFrame = CFrame.new(PosMon.X, groundY, PosMon.Z)
+                
                 mob.PrimaryPart.CanCollide = false
                 mob.PrimaryPart.Velocity = Vector3.new(0,0,0)
                 mob.PrimaryPart.RotVelocity = Vector3.new(0,0,0)
@@ -12774,7 +12775,7 @@ spawn(function()
     while wait(0.2) do
         pcall(function()
             if _G.FarmLevel and PosMon then
-                Root.CFrame = CFrame.new(PosMon.X, PosMon.Y + 5, PosMon.Z) * CFrame.Angles(0, math.rad(180), 0)
+                Root.CFrame = CFrame.new(PosMon.X, PosMon.Y + 8, PosMon.Z) * CFrame.Angles(0, math.rad(180), 0)
             end
         end)
     end
