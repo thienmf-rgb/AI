@@ -429,24 +429,24 @@ statsSetings = function(Y, R)
 		end;
 	end;
 BringEnemy = function()
-		if not _B then
-			return;
-		end;
-		for Y, R in pairs(workspace.Enemies:GetChildren()) do
-			if R:FindFirstChild("Humanoid") and R.Humanoid.Health > 0 then
-				if (R.PrimaryPart.Position - PosMon).Magnitude <= 300 then
-					R.PrimaryPart.CFrame = CFrame.new(PosMon);
-					R.PrimaryPart.CanCollide = true;
-					(R:FindFirstChild("Humanoid")).WalkSpeed = 0;
-					(R:FindFirstChild("Humanoid")).JumpPower = 0;
-					if R.Humanoid:FindFirstChild("Animator") then
-						R.Humanoid.Animator:Destroy();
-					end;
-					d.SimulationRadius = math.huge;
-				end;
-			end;
-		end;
-	end;
+    if not _B or not PosMon then return end
+    for _, mob in pairs(workspace.Enemies:GetChildren()) do
+        if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and mob.PrimaryPart then
+            local dist = (mob.PrimaryPart.Position - PosMon).Magnitude
+            if dist <= 350 then
+                mob.PrimaryPart.CFrame = CFrame.new(PosMon.X, PosMon.Y + 4, PosMon.Z)
+                mob.PrimaryPart.CanCollide = false
+                mob.PrimaryPart.Velocity = Vector3.new(0,0,0)
+                mob.PrimaryPart.RotVelocity = Vector3.new(0,0,0)
+                
+                local hum = mob.Humanoid
+                hum.WalkSpeed = 0
+                hum.JumpPower = 0
+                hum.PlatformStand = true
+            end
+        end
+    end
+end
 Useskills = function(Y, d)
 		if Y == "Melee" then
 			weaponSc("Melee");
@@ -12760,14 +12760,14 @@ task.spawn(function()
 		end)
 	end)
 end)
--- ==================== MAIN FARM LEVEL - KHÔNG ĐỨNG IM ====================
+-- ==================== MAIN FARM LEVEL - KHÔNG ĐỨNG IM (TURBO STYLE) ====================
 spawn(function()
 	while wait(T) do
 		pcall(function()
 			if not _G.FarmLevel then return end
 			
 			-- Nhận quest nhanh + an toàn
-			if not d.PlayerGui.Main.Quest.Visible then
+			if not (d.PlayerGui.Main.Quest and d.PlayerGui.Main.Quest.Visible) then
 				CheckQuest()
 				wait(0.2)
 			end
@@ -12776,11 +12776,12 @@ spawn(function()
 			
 			if enemy and f.Alive(enemy) then
 				PosMon = enemy.HumanoidRootPart.Position
+				BringEnemy()
 				f.Kill(enemy)
 			else
-				-- Nếu không tìm thấy quái thì đi đến vị trí quest
+				-- Nếu không có quái thì di chuyển đến vị trí quest
 				if CFrameMon then
-					Root.CFrame = CFrameMon * CFrame.new(0, 10, 0)
+					Root.CFrame = CFrame.new(CFrameMon.Position) * CFrame.new(0, 10, 0)
 				end
 			end
 		end)
