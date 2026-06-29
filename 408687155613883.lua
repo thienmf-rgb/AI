@@ -269,39 +269,34 @@ f.DistH = function(Y, d)
 		return (R.Position - (Y:FindFirstChild("HumanoidRootPart")).Position).Magnitude > d;
 	end;
 f.Kill = function(Y, d)
-    if not Y or not Y:FindFirstChild("HumanoidRootPart") then return end
-    
-    PosMon = Y.HumanoidRootPart.Position
-    BringEnemy()
-    
-    EquipWeapon(_G.SelectWeapon)
-    
-    local tool = d.Character:FindFirstChildOfClass("Tool")
-    local tooltip = tool and tool.ToolTip or ""
-    
-    -- GIẢM BAY LUNG TUNG
-    local dist = (Y.HumanoidRootPart.Position - R.Position).Magnitude
-    if dist > 40 then
-        _tp(Y.HumanoidRootPart.CFrame * CFrame.new(0, 18, 0))
-    else
-        notween(Y.HumanoidRootPart.CFrame * CFrame.new(0, 12, 0))
-    end
-    
-    -- TẤN CÔNG
-    if tooltip == "Blox Fruit" then
-        Useskills("Blox Fruit", "Z")
-        task.wait(0.4)
-        Useskills("Blox Fruit", "X")
-        task.wait(0.3)
-        Useskills("Blox Fruit", "C")
-    else
-        Useskills(tooltip == "Sword" and "Sword" or "Melee", "Z")
-        task.wait(0.2)
-        Useskills(tooltip == "Sword" and "Sword" or "Melee", "X")
-    end
-end
-
-f.Kill2 = f.Kill  -- Dùng chung 1 hàm
+		if Y and d then
+			if not Y:GetAttribute("Locked") then
+				Y:SetAttribute("Locked", Y.HumanoidRootPart.CFrame);
+			end;
+			PosMon = (Y:GetAttribute("Locked")).Position;
+			BringEnemy();
+			EquipWeapon(_G.SelectWeapon);
+			local d = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool");
+			local R = d.ToolTip;
+			if R == "Blox Fruit" then
+				_tp((Y.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
+			else
+				_tp((Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0)) * CFrame.Angles(0, math.rad(180), 0));
+			end;
+			if RandomCFrame then
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 25));
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(25, 20, 0));
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(-25, 20, 0));
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 25));
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(-25, 20, 0));
+			end;
+		end;
+	end;
 f.Kill2 = function(Y, d)
 		if Y and d then
 			if not Y:GetAttribute("Locked") then
@@ -1760,11 +1755,6 @@ local nz = {};
 local Iz = game:GetService("TweenService");
 local Wz = game:GetService("UserInputService");
 local Nz = game:GetService("RunService");
-local function IsInRaid()
-    return workspace:FindFirstChild("Raid") 
-        or workspace:FindFirstChild("RaidBoss") 
-        or d.PlayerGui:FindFirstChild("RaidGui")
-end
 local function Dz(Y, d)
 	local R = nil;
 	local Q = nil;
@@ -10732,29 +10722,25 @@ Qq.CreateToggle({
 		_G.Auto_StartRaid = Y;
 	end,
 });
-
 spawn(function()
-	while task.wait(0.5) do  
+	while wait(T) do
 		pcall(function()
-			if not _G.Auto_StartRaid then return end
-
-			local raidTimer = d.PlayerGui.Main.TopHUDList.RaidTimer
-			if raidTimer.Visible == true then return end  
-
-			if GetBP("Special Microchip") then
-				if World2 then
-					_tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
-					task.wait(0.5)
-					fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
-				elseif World3 then
-					Q.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
-					task.wait(0.5)
-					fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
-				end
-			end
-		end)
-	end
-end)
+			if _G.Auto_StartRaid then
+				if d.PlayerGui.Main.TopHUDList.RaidTimer.Visible == false then
+					if GetBP("Special Microchip") then
+						if World2 then
+							_tp(CFrame.new(-6438.73535, 250.645355, -4501.50684));
+							fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector);
+						elseif World3 then
+							Q.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602, -0.405007899, -4.31682743e-08, .914313197, -1.90943332e-08, 1, 3.8755779e-08, -0.914313197, -1.76180437e-09, -0.405007899));
+							fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector);
+						end;
+					end;
+				end;
+			end;
+		end);
+	end;
+end);
 Qq.CreateToggle({
 	Title = "Teleport To Lab",
 	Description = "",
@@ -10820,6 +10806,33 @@ spawn(function()
 			end;
 		end;
 	end);
+end);
+Qq.CreateToggle({
+	Title = "Kill Aura",
+	Description = "",
+	Default = false,
+	Callback = function(Y)
+		_G.KillH = Y;
+	end,
+});
+spawn(function()
+	while wait(T) do
+		if _G.KillH then
+			for Y, R in pairs(workspace.Enemies:GetChildren()) do
+				if f.Alive(R) then
+					pcall(function()
+						repeat
+							wait(T);
+							sethiddenproperty(d, "SimulationRadius", math.huge);
+							R:BreakJoints();
+							R.Humanoid.Health = 0;
+							R.HumanoidRootPart.CanCollide = false;
+						until not _G.KillH or not R.Parent or R.Humanoid.Health <= 0;
+					end);
+				end;
+			end;
+		end;
+	end;
 end);
 Qq.CreateToggle({
 	Title = "Auto Next Island",
