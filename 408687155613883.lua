@@ -429,23 +429,29 @@ statsSetings = function(Y, R)
 		end;
 	end;
 BringEnemy = function()
-    if not _B or not PosMon then return end
+    if not PosMon then return end
+    
+    local questMobName = Mon  -- Mon là tên quái trong quest (đã được set ở CheckQuest)
     
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
-        if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and mob.PrimaryPart then
-            local dist = (mob.PrimaryPart.Position - PosMon).Magnitude
+        if mob.Name == questMobName and  -- CHỈ GOM QUÁI CÙNG TÊN
+           mob:FindFirstChild("Humanoid") and 
+           mob:FindFirstChild("HumanoidRootPart") and
+           mob.Humanoid.Health > 0 then
+            
+            local dist = (mob.HumanoidRootPart.Position - PosMon).Magnitude
+            
             if dist <= 350 then
-                -- Gom quái nhưng vẫn cho phép đánh nhau
-                mob.PrimaryPart.CFrame = CFrame.new(PosMon.X, PosMon.Y + 4, PosMon.Z)
-                mob.PrimaryPart.CanCollide = false
-                mob.PrimaryPart.Velocity = Vector3.new(0, 0, 0)
-                mob.PrimaryPart.RotVelocity = Vector3.new(0, 0, 0)
+                mob.HumanoidRootPart.CFrame = CFrame.new(PosMon.X, PosMon.Y + 4, PosMon.Z)
+                mob.HumanoidRootPart.CanCollide = false
+                mob.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                mob.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
                 
                 local hum = mob:FindFirstChild("Humanoid")
                 if hum then
                     hum.WalkSpeed = 0
                     hum.JumpPower = 0
-                    hum.PlatformStand = false   -- Quan trọng: false để quái vẫn "sống"
+                    hum.PlatformStand = false
                 end
             end
         end
