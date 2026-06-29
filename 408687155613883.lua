@@ -430,19 +430,23 @@ statsSetings = function(Y, R)
 	end;
 BringEnemy = function()
     if not _B or not PosMon then return end
+    
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and mob.PrimaryPart then
             local dist = (mob.PrimaryPart.Position - PosMon).Magnitude
             if dist <= 350 then
+                -- Gom quái nhưng vẫn cho phép đánh nhau
                 mob.PrimaryPart.CFrame = CFrame.new(PosMon.X, PosMon.Y + 4, PosMon.Z)
                 mob.PrimaryPart.CanCollide = false
-                mob.PrimaryPart.Velocity = Vector3.new(0,0,0)
-                mob.PrimaryPart.RotVelocity = Vector3.new(0,0,0)
+                mob.PrimaryPart.Velocity = Vector3.new(0, 0, 0)
+                mob.PrimaryPart.RotVelocity = Vector3.new(0, 0, 0)
                 
-                local hum = mob.Humanoid
-                hum.WalkSpeed = 0
-                hum.JumpPower = 0
-                hum.PlatformStand = true
+                local hum = mob:FindFirstChild("Humanoid")
+                if hum then
+                    hum.WalkSpeed = 0
+                    hum.JumpPower = 0
+                    hum.PlatformStand = false   -- Quan trọng: false để quái vẫn "sống"
+                end
             end
         end
     end
