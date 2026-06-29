@@ -2,8 +2,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDzaiScript/Setting
 local Y = game.Players;
 local d = Y.LocalPlayer;
 local R = d.Character.HumanoidRootPart;
-local lp = game.Players.LocalPlayer
-local Root = lp.Character:WaitForChild("HumanoidRootPart")
 local Q = game:GetService("ReplicatedStorage");
 local r = d.Data.Level.Value;
 local a = game:GetService("TeleportService");
@@ -254,33 +252,51 @@ gay = (function()
 	end)();
 local f = {};
 f.__index = f;
-
 f.Alive = function(Y)
-    if not Y then return false; end
-    local hum = Y:FindFirstChild("Humanoid");
-    return hum and hum.Health > 0;
-end;
-
-f.Pos = function(Y, d)
-    if not Y or not Y:FindFirstChild("HumanoidRootPart") then return false end
-		return (R.Position - Y.HumanoidRootPart.Position).Magnitude <= d;
+		if not Y then
+			return;
+		end;
+		local d = Y:FindFirstChild("Humanoid");
+		return d and d.Health > 0;
 	end;
-
-f.Kill = function(mob)
-    if not mob or not f.Alive(mob) then return end
-    PosMon = mob.HumanoidRootPart.Position
-    BringEnemy()
-    EquipWeapon(_G.SelectWeapon or "Melee")
-    
-    local tool = lp.Character:FindFirstChildOfClass("Tool")
-    local tip = tool and tool.ToolTip or ""
-    
-    if tip == "Blox Fruit" then
-        Root.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0) * CFrame.Angles(0, math.rad(90), 0)
-    else
-        Root.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0) * CFrame.Angles(0, math.rad(180), 0)
-    end
-end
+f.Pos = function(Y, d)
+		return (R.Position - mode.Position).Magnitude <= d;
+	end;
+f.Dist = function(Y, d)
+		return (R.Position - (Y:FindFirstChild("HumanoidRootPart")).Position).Magnitude <= d;
+	end;
+f.DistH = function(Y, d)
+		return (R.Position - (Y:FindFirstChild("HumanoidRootPart")).Position).Magnitude > d;
+	end;
+f.Kill = function(Y, d)
+		if Y and d then
+			if not Y:GetAttribute("Locked") then
+				Y:SetAttribute("Locked", Y.HumanoidRootPart.CFrame);
+			end;
+			PosMon = (Y:GetAttribute("Locked")).Position;
+			BringEnemy();
+			EquipWeapon(_G.SelectWeapon);
+			local d = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool");
+			local R = d.ToolTip;
+			if R == "Blox Fruit" then
+				_tp((Y.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
+			else
+				_tp((Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0)) * CFrame.Angles(0, math.rad(180), 0));
+			end;
+			if RandomCFrame then
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 25));
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(25, 20, 0));
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(-25, 20, 0));
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(0, 20, 25));
+				wait(.5);
+				_tp(Y.HumanoidRootPart.CFrame * CFrame.new(-25, 20, 0));
+			end;
+		end;
+	end;
 f.Kill2 = function(Y, d)
 		if Y and d then
 			if not Y:GetAttribute("Locked") then
@@ -412,30 +428,24 @@ statsSetings = function(Y, R)
 		end;
 	end;
 BringEnemy = function()
-    if not _B or not PosMon then return end
-    
-    for _, mob in pairs(workspace.Enemies:GetChildren()) do
-        if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 and mob.PrimaryPart then
-            local distance = (mob.PrimaryPart.Position - PosMon).Magnitude
-            if distance <= 350 then
-                -- Giữ quái sát mặt đất hoàn toàn
-                local groundY = PosMon.Y + 3  -- Cao 3 stud so với mặt đất
-                mob.PrimaryPart.CFrame = CFrame.new(PosMon.X, groundY, PosMon.Z)
-                
-                mob.PrimaryPart.CanCollide = false
-                mob.PrimaryPart.Velocity = Vector3.new(0,0,0)
-                mob.PrimaryPart.RotVelocity = Vector3.new(0,0,0)
-                
-                local hum = mob:FindFirstChild("Humanoid")
-                if hum then
-                    hum.WalkSpeed = 0
-                    hum.JumpPower = 0
-                    hum.PlatformStand = true
-                end
-            end
-        end
-    end
-end
+		if not _B then
+			return;
+		end;
+		for Y, R in pairs(workspace.Enemies:GetChildren()) do
+			if R:FindFirstChild("Humanoid") and R.Humanoid.Health > 0 then
+				if (R.PrimaryPart.Position - PosMon).Magnitude <= 300 then
+					R.PrimaryPart.CFrame = CFrame.new(PosMon);
+					R.PrimaryPart.CanCollide = true;
+					(R:FindFirstChild("Humanoid")).WalkSpeed = 0;
+					(R:FindFirstChild("Humanoid")).JumpPower = 0;
+					if R.Humanoid:FindFirstChild("Animator") then
+						R.Humanoid.Animator:Destroy();
+					end;
+					d.SimulationRadius = math.huge;
+				end;
+			end;
+		end;
+	end;
 Useskills = function(Y, d)
 		if Y == "Melee" then
 			weaponSc("Melee");
@@ -12748,35 +12758,4 @@ task.spawn(function()
 			end
 		end)
 	end)
-end)
--- ==================== MAIN FARM LOOP (NHÂN VẬT ĐỨNG IM) ====================
-spawn(function()
-	while wait(T) do
-		pcall(function()
-			if not _G.FarmLevel then return end
-			
-			CheckQuest()
-			
-			local enemy = GetConnectionEnemies(Mon)
-			if enemy and f.Alive(enemy) then
-				-- Nhân vật đứng im
-				Root.CFrame = CFrame.new(PosMon or Root.Position) * CFrame.new(0, 20, 0)
-				f.Kill(enemy)
-			elseif CFrameMon then
-				-- Chỉ di chuyển khi quái hết
-				PosMon = CFrameMon.Position
-				Root.CFrame = CFrameMon
-			end
-		end)
-	end
-end)
--- Nhân vật đứng sát đất
-spawn(function()
-    while wait(0.2) do
-        pcall(function()
-            if _G.FarmLevel and PosMon then
-                Root.CFrame = CFrame.new(PosMon.X, PosMon.Y + 8, PosMon.Z) * CFrame.Angles(0, math.rad(180), 0)
-            end
-        end)
-    end
 end)
